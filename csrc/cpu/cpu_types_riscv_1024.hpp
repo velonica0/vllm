@@ -107,23 +107,23 @@ struct FP32Vec16;
 
 struct FP16Vec16 : public Vec<FP16Vec16> {
   constexpr static int VEC_ELEM_NUM = 16;
-  fixed_vfloat16m2_t reg;
+  fixed_vfloat16mf4_t reg;
 
   explicit FP16Vec16(const void* ptr)
-      : reg(__riscv_vle16_v_f16m2(static_cast<const _Float16*>(ptr),
+      : reg(__riscv_vle16_v_f16mf4(static_cast<const _Float16*>(ptr),
                                   VEC_ELEM_NUM)) {};
 
   explicit FP16Vec16(const FP32Vec16& vec);
 
   void save(void* ptr) const {
-    __riscv_vse16_v_f16m2(static_cast<_Float16*>(ptr), reg, VEC_ELEM_NUM);
+    __riscv_vse16_v_f16mf4(static_cast<_Float16*>(ptr), reg, VEC_ELEM_NUM);
   }
   void save(void* ptr, int elem_num) const {
-    __riscv_vse16_v_f16m2(static_cast<_Float16*>(ptr), reg, elem_num);
+    __riscv_vse16_v_f16mf4(static_cast<_Float16*>(ptr), reg, elem_num);
   }
   void save_strided(void* ptr, ptrdiff_t stride) const {
     ptrdiff_t byte_stride = stride * sizeof(_Float16);
-    __riscv_vsse16_v_f16m2(static_cast<_Float16*>(ptr), byte_stride, reg,
+    __riscv_vsse16_v_f16mf4(static_cast<_Float16*>(ptr), byte_stride, reg,
                            VEC_ELEM_NUM);
   }
 };
@@ -461,61 +461,61 @@ struct FP32Vec8 : public Vec<FP32Vec8> {
 
 struct FP32Vec16 : public Vec<FP32Vec16> {
   constexpr static int VEC_ELEM_NUM = 16;
-  fixed_vfloat32m4_t reg;
+  fixed_vfloat32mf2_t reg;
 
-  explicit FP32Vec16(float v) : reg(__riscv_vfmv_v_f_f32m4(v, VEC_ELEM_NUM)) {};
-  explicit FP32Vec16() : reg(__riscv_vfmv_v_f_f32m4(0.0f, VEC_ELEM_NUM)) {};
+  explicit FP32Vec16(float v) : reg(__riscv_vfmv_v_f_f32mf2(v, VEC_ELEM_NUM)) {};
+  explicit FP32Vec16() : reg(__riscv_vfmv_v_f_f32mf2(0.0f, VEC_ELEM_NUM)) {};
   explicit FP32Vec16(const float* ptr)
-      : reg(__riscv_vle32_v_f32m4(ptr, VEC_ELEM_NUM)) {};
-  explicit FP32Vec16(fixed_vfloat32m4_t data) : reg(data) {};
+      : reg(__riscv_vle32_v_f32mf2(ptr, VEC_ELEM_NUM)) {};
+  explicit FP32Vec16(fixed_vfloat32mf2_t data) : reg(data) {};
   explicit FP32Vec16(const FP32Vec8& data)
-      : reg(__riscv_vcreate_v_f32m2_f32m4(data.reg, data.reg)) {};
+      : reg(__riscv_vcreate_v_f32m2_f32mf2(data.reg, data.reg)) {};
   explicit FP32Vec16(const FP32Vec16& data) : reg(data.reg) {};
   explicit FP32Vec16(const FP16Vec16& v);
 
 #ifdef RISCV_BF16_SUPPORT
-  explicit FP32Vec16(fixed_vbfloat16m2_t v)
-      : reg(__riscv_vfwcvtbf16_f_f_v_f32m4(v, VEC_ELEM_NUM)) {};
+  explicit FP32Vec16(fixed_vbfloat16mf4_t v)
+      : reg(__riscv_vfwcvtbf16_f_f_v_f32mf2(v, VEC_ELEM_NUM)) {};
   explicit FP32Vec16(const BF16Vec16& v)
-      : reg(__riscv_vfwcvtbf16_f_f_v_f32m4(v.reg, VEC_ELEM_NUM)) {};
+      : reg(__riscv_vfwcvtbf16_f_f_v_f32mf2(v.reg, VEC_ELEM_NUM)) {};
 #else
   explicit FP32Vec16(const BF16Vec16& v) : reg(v.reg_fp32) {};
 #endif
 
   FP32Vec16 operator+(const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfadd_vv_f32m4(reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfadd_vv_f32mf2(reg, b.reg, VEC_ELEM_NUM));
   }
   FP32Vec16 operator-(const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfsub_vv_f32m4(reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfsub_vv_f32mf2(reg, b.reg, VEC_ELEM_NUM));
   }
   FP32Vec16 operator*(const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfmul_vv_f32m4(reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfmul_vv_f32mf2(reg, b.reg, VEC_ELEM_NUM));
   }
   FP32Vec16 operator/(const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfdiv_vv_f32m4(reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfdiv_vv_f32mf2(reg, b.reg, VEC_ELEM_NUM));
   }
 
   FP32Vec16 fma(const FP32Vec16& a, const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfmacc_vv_f32m4(reg, a.reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfmacc_vv_f32mf2(reg, a.reg, b.reg, VEC_ELEM_NUM));
   }
 
   float reduce_sum() const {
     fixed_vfloat32m1_t scalar = __riscv_vfmv_s_f_f32m1(0.0f, 1);
-    scalar = __riscv_vfredusum_vs_f32m4_f32m1(reg, scalar, VEC_ELEM_NUM);
+    scalar = __riscv_vfredusum_vs_f32mf2_f32m1(reg, scalar, VEC_ELEM_NUM);
     return __riscv_vfmv_f_s_f32m1_f32(scalar);
   }
 
   float reduce_max() const {
     fixed_vfloat32m1_t scalar =
         __riscv_vfmv_s_f_f32m1(std::numeric_limits<float>::lowest(), 1);
-    scalar = __riscv_vfredmax_vs_f32m4_f32m1(reg, scalar, VEC_ELEM_NUM);
+    scalar = __riscv_vfredmax_vs_f32mf2_f32m1(reg, scalar, VEC_ELEM_NUM);
     return __riscv_vfmv_f_s_f32m1_f32(scalar);
   }
 
   float reduce_min() const {
     fixed_vfloat32m1_t scalar =
         __riscv_vfmv_s_f_f32m1(std::numeric_limits<float>::max(), 1);
-    scalar = __riscv_vfredmin_vs_f32m4_f32m1(reg, scalar, VEC_ELEM_NUM);
+    scalar = __riscv_vfredmin_vs_f32mf2_f32m1(reg, scalar, VEC_ELEM_NUM);
     return __riscv_vfmv_f_s_f32m1_f32(scalar);
   }
 
@@ -523,114 +523,114 @@ struct FP32Vec16 : public Vec<FP32Vec16> {
   float reduce_sub_sum(int idx) {
     static_assert(VEC_ELEM_NUM % group_size == 0);
     const int start = idx * group_size;
-    vuint32m4_t indices = __riscv_vid_v_u32m4(VEC_ELEM_NUM);
+    vuint32m4_t indices = __riscv_vid_v_u32mf2(VEC_ELEM_NUM);
     vbool8_t mask = __riscv_vmand_mm_b8(
-        __riscv_vmsgeu_vx_u32m4_b8(indices, start, VEC_ELEM_NUM),
-        __riscv_vmsltu_vx_u32m4_b8(indices, start + group_size, VEC_ELEM_NUM),
+        __riscv_vmsgeu_vx_u32mf2_b8(indices, start, VEC_ELEM_NUM),
+        __riscv_vmsltu_vx_u32mf2_b8(indices, start + group_size, VEC_ELEM_NUM),
         VEC_ELEM_NUM);
     fixed_vfloat32m1_t scalar = __riscv_vfmv_s_f_f32m1(0.0f, 1);
     scalar =
-        __riscv_vfredusum_vs_f32m4_f32m1_m(mask, reg, scalar, VEC_ELEM_NUM);
-    return __riscv_vfmv_f_s_f32m1_f32(scalar);
+        __riscv_vfredusum_vs_f32mf2_f32m1_m(mask, reg, scalar, VEC_ELEM_NUM);
+    return __riscv_vfmv_f_s_f32mf2_f32(scalar);
   };
 
   FP32Vec16 max(const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfmax_vv_f32m4(reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfmax_vv_f32mf2(reg, b.reg, VEC_ELEM_NUM));
   }
   FP32Vec16 min(const FP32Vec16& b) const {
-    return FP32Vec16(__riscv_vfmin_vv_f32m4(reg, b.reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfmin_vv_f32mf2(reg, b.reg, VEC_ELEM_NUM));
   }
   FP32Vec16 abs() const {
-    return FP32Vec16(__riscv_vfabs_v_f32m4(reg, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfabs_v_f32mf2(reg, VEC_ELEM_NUM));
   }
 
   FP32Vec16 clamp(const FP32Vec16& min_v, const FP32Vec16& max_v) const {
-    return FP32Vec16(__riscv_vfmin_vv_f32m4(
-        max_v.reg, __riscv_vfmax_vv_f32m4(min_v.reg, reg, VEC_ELEM_NUM),
+    return FP32Vec16(__riscv_vfmin_vv_f32mf2(
+        max_v.reg, __riscv_vfmax_vv_f32mf2(min_v.reg, reg, VEC_ELEM_NUM),
         VEC_ELEM_NUM));
   }
 
-  void save(float* ptr) const { __riscv_vse32_v_f32m4(ptr, reg, VEC_ELEM_NUM); }
+  void save(float* ptr) const { __riscv_vse32_v_f32mf2(ptr, reg, VEC_ELEM_NUM); }
   void save(float* ptr, int elem_num) const {
-    __riscv_vse32_v_f32m4(ptr, reg, elem_num);
+    __riscv_vse32_v_f32mf2(ptr, reg, elem_num);
   }
   void save_strided(float* ptr, ptrdiff_t stride) const {
     ptrdiff_t byte_stride = stride * sizeof(float);
-    __riscv_vsse32_v_f32m4(ptr, byte_stride, reg, VEC_ELEM_NUM);
+    __riscv_vsse32_v_f32mf2(ptr, byte_stride, reg, VEC_ELEM_NUM);
   }
 
   FP32Vec16 exp() const {
     const float inv_ln2 = 1.44269504088896341f;
-    fixed_vfloat32m4_t x_scaled =
-        __riscv_vfmul_vf_f32m4(reg, inv_ln2, VEC_ELEM_NUM);
-    fixed_vint32m4_t n_int = __riscv_vfcvt_x_f_v_i32m4(x_scaled, VEC_ELEM_NUM);
-    fixed_vfloat32m4_t n_float = __riscv_vfcvt_f_x_v_f32m4(n_int, VEC_ELEM_NUM);
-    fixed_vfloat32m4_t r =
-        __riscv_vfsub_vv_f32m4(x_scaled, n_float, VEC_ELEM_NUM);
+    fixed_vfloat32mf2_t x_scaled =
+        __riscv_vfmul_vf_f32mf2(reg, inv_ln2, VEC_ELEM_NUM);
+    fixed_vint32mf2_t n_int = __riscv_vfcvt_x_f_v_i32mf2(x_scaled, VEC_ELEM_NUM);
+    fixed_vfloat32mf2_t n_float = __riscv_vfcvt_f_x_v_f32mf2(n_int, VEC_ELEM_NUM);
+    fixed_vfloat32mf2_t r =
+        __riscv_vfsub_vv_f32mf2(x_scaled, n_float, VEC_ELEM_NUM);
 
-    fixed_vfloat32m4_t poly =
-        __riscv_vfmv_v_f_f32m4(0.001333355810164f, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, r, VEC_ELEM_NUM),
+    fixed_vfloat32mf2_t poly =
+        __riscv_vfmv_v_f_f32mf2(0.001333355810164f, VEC_ELEM_NUM);
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, r, VEC_ELEM_NUM),
                                   0.009618129107628f, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, r, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, r, VEC_ELEM_NUM),
                                   0.055504108664821f, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, r, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, r, VEC_ELEM_NUM),
                                   0.240226506959101f, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, r, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, r, VEC_ELEM_NUM),
                                   0.693147180559945f, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, r, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, r, VEC_ELEM_NUM),
                                   1.0f, VEC_ELEM_NUM);
 
-    fixed_vint32m4_t biased_exp = __riscv_vmax_vx_i32m4(
-        __riscv_vadd_vx_i32m4(n_int, 127, VEC_ELEM_NUM), 0, VEC_ELEM_NUM);
-    fixed_vfloat32m4_t scale = __riscv_vreinterpret_v_i32m4_f32m4(
-        __riscv_vsll_vx_i32m4(biased_exp, 23, VEC_ELEM_NUM));
+    fixed_vint32mf2_t biased_exp = __riscv_vmax_vx_i32mf2(
+        __riscv_vadd_vx_i32mf2(n_int, 127, VEC_ELEM_NUM), 0, VEC_ELEM_NUM);
+    fixed_vfloat32mf2_t scale = __riscv_vreinterpret_v_i32mf2_f32mf2(
+        __riscv_vsll_vx_i32mf2(biased_exp, 23, VEC_ELEM_NUM));
 
-    return FP32Vec16(__riscv_vfmul_vv_f32m4(poly, scale, VEC_ELEM_NUM));
+    return FP32Vec16(__riscv_vfmul_vv_f32mf2(poly, scale, VEC_ELEM_NUM));
   }
 
   FP32Vec16 tanh() const {
-    fixed_vfloat32m4_t x_clamped = __riscv_vfmin_vf_f32m4(
-        __riscv_vfmax_vf_f32m4(reg, -9.0f, VEC_ELEM_NUM), 9.0f, VEC_ELEM_NUM);
+    fixed_vfloat32mf2_t x_clamped = __riscv_vfmin_vf_f32mf2(
+        __riscv_vfmax_vf_f32mf2(reg, -9.0f, VEC_ELEM_NUM), 9.0f, VEC_ELEM_NUM);
     FP32Vec16 exp_val =
-        FP32Vec16(__riscv_vfmul_vf_f32m4(x_clamped, 2.0f, VEC_ELEM_NUM)).exp();
-    return FP32Vec16(__riscv_vfdiv_vv_f32m4(
-        __riscv_vfsub_vf_f32m4(exp_val.reg, 1.0f, VEC_ELEM_NUM),
-        __riscv_vfadd_vf_f32m4(exp_val.reg, 1.0f, VEC_ELEM_NUM), VEC_ELEM_NUM));
+        FP32Vec16(__riscv_vfmul_vf_f32mf2(x_clamped, 2.0f, VEC_ELEM_NUM)).exp();
+    return FP32Vec16(__riscv_vfdiv_vv_f32mf2(
+        __riscv_vfsub_vf_f32mf2(exp_val.reg, 1.0f, VEC_ELEM_NUM),
+        __riscv_vfadd_vf_f32mf2(exp_val.reg, 1.0f, VEC_ELEM_NUM), VEC_ELEM_NUM));
   }
 
   FP32Vec16 er() const {
     const float p = 0.3275911f, a1 = 0.254829592f, a2 = -0.284496736f,
                 a3 = 1.421413741f, a4 = -1.453152027f, a5 = 1.061405429f;
-    fixed_vfloat32m4_t abs_x = __riscv_vfabs_v_f32m4(reg, VEC_ELEM_NUM);
-    fixed_vfloat32m4_t t = __riscv_vfrdiv_vf_f32m4(
-        __riscv_vfadd_vf_f32m4(__riscv_vfmul_vf_f32m4(abs_x, p, VEC_ELEM_NUM),
+    fixed_vfloat32mf2_t abs_x = __riscv_vfabs_v_f32mf2(reg, VEC_ELEM_NUM);
+    fixed_vfloat32mf2_t t = __riscv_vfrdiv_vf_f32mf2(
+        __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vf_f32mf2(abs_x, p, VEC_ELEM_NUM),
                                1.0f, VEC_ELEM_NUM),
         1.0f, VEC_ELEM_NUM);
 
-    fixed_vfloat32m4_t poly = __riscv_vfmv_v_f_f32m4(a5, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, t, VEC_ELEM_NUM),
+    fixed_vfloat32mf2_t poly = __riscv_vfmv_v_f_f32mf2(a5, VEC_ELEM_NUM);
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, t, VEC_ELEM_NUM),
                                   a4, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, t, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, t, VEC_ELEM_NUM),
                                   a3, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, t, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, t, VEC_ELEM_NUM),
                                   a2, VEC_ELEM_NUM);
-    poly = __riscv_vfadd_vf_f32m4(__riscv_vfmul_vv_f32m4(poly, t, VEC_ELEM_NUM),
+    poly = __riscv_vfadd_vf_f32mf2(__riscv_vfmul_vv_f32mf2(poly, t, VEC_ELEM_NUM),
                                   a1, VEC_ELEM_NUM);
-    poly = __riscv_vfmul_vv_f32m4(poly, t, VEC_ELEM_NUM);
+    poly = __riscv_vfmul_vv_f32mf2(poly, t, VEC_ELEM_NUM);
 
-    fixed_vfloat32m4_t exp_val =
-        FP32Vec16(__riscv_vfneg_v_f32m4(
-                      __riscv_vfmul_vv_f32m4(abs_x, abs_x, VEC_ELEM_NUM),
+    fixed_vfloat32mf2_t exp_val =
+        FP32Vec16(__riscv_vfneg_v_f32mf2(
+                      __riscv_vfmul_vv_f32mf2(abs_x, abs_x, VEC_ELEM_NUM),
                       VEC_ELEM_NUM))
             .exp()
             .reg;
-    fixed_vfloat32m4_t res = __riscv_vfrsub_vf_f32m4(
-        __riscv_vfmul_vv_f32m4(poly, exp_val, VEC_ELEM_NUM), 1.0f,
+    fixed_vfloat32mf2_t res = __riscv_vfrsub_vf_f32mf2(
+        __riscv_vfmul_vv_f32mf2(poly, exp_val, VEC_ELEM_NUM), 1.0f,
         VEC_ELEM_NUM);
 
-    vbool8_t mask = __riscv_vmflt_vf_f32m4_b8(reg, 0.0f, VEC_ELEM_NUM);
-    return FP32Vec16(__riscv_vfneg_v_f32m4_m(mask, res, VEC_ELEM_NUM));
+    vbool8_t mask = __riscv_vmflt_vf_f32mf2_b8(reg, 0.0f, VEC_ELEM_NUM);
+    return FP32Vec16(__riscv_vfneg_v_f32mf2_m(mask, res, VEC_ELEM_NUM));
   }
 };
 
