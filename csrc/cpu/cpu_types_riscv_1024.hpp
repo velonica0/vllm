@@ -10,32 +10,47 @@
 #include <torch/all.h>
 
 // ============================================================================
-// Vector Register Type Definitions (VLEN=128 bits)
+// Vector Register Type Definitions (VLEN=1024 bits)
 // ============================================================================
 
+// typedef vfloat16m1_t fixed_vfloat16m1_t
+//     __attribute__((riscv_rvv_vector_bits(128)));
+// typedef vfloat16m2_t fixed_vfloat16m2_t
+//     __attribute__((riscv_rvv_vector_bits(256)));
+typedef vfloat16mf4_t fixed_vfloat16mf4_t 
+      __attribute__((riscv_rvv_vector_bits(256)));
+typedef vfloat16mf2_t fixed_vfloat16mf2_t
+      __attribute__((riscv_rvv_vector_bits(512)));
 typedef vfloat16m1_t fixed_vfloat16m1_t
-    __attribute__((riscv_rvv_vector_bits(128)));
-typedef vfloat16m2_t fixed_vfloat16m2_t
-    __attribute__((riscv_rvv_vector_bits(256)));
+      __attribute__((riscv_rvv_vector_bits(1024)));
 
-typedef vfloat32m1_t fixed_vfloat32m1_t
-    __attribute__((riscv_rvv_vector_bits(128)));
-typedef vfloat32m2_t fixed_vfloat32m2_t
+// typedef vfloat32m1_t fixed_vfloat32m1_t
+//     __attribute__((riscv_rvv_vector_bits(128)));
+// typedef vfloat32m2_t fixed_vfloat32m2_t
+//     __attribute__((riscv_rvv_vector_bits(256)));
+// typedef vfloat32m4_t fixed_vfloat32m4_t
+//     __attribute__((riscv_rvv_vector_bits(512)));
+// typedef vfloat32m8_t fixed_vfloat32m8_t
+//     __attribute__((riscv_rvv_vector_bits(1024)));
+typedef vfloat32mf4_t fixed_vfloat32mf4_t
     __attribute__((riscv_rvv_vector_bits(256)));
-typedef vfloat32m4_t fixed_vfloat32m4_t
+typedef vfloat32mf2_t fixed_vfloat32mf2_t
     __attribute__((riscv_rvv_vector_bits(512)));
-typedef vfloat32m8_t fixed_vfloat32m8_t
+typedef vfloat32m1_t fixed_vfloat32m1_t
     __attribute__((riscv_rvv_vector_bits(1024)));
 
-typedef vint32m2_t fixed_vint32m2_t __attribute__((riscv_rvv_vector_bits(256)));
-typedef vint32m4_t fixed_vint32m4_t __attribute__((riscv_rvv_vector_bits(512)));
+// typedef vint32m2_t fixed_vint32m2_t __attribute__((riscv_rvv_vector_bits(256)));
+// typedef vint32m4_t fixed_vint32m4_t __attribute__((riscv_rvv_vector_bits(512)));
+typedef vint32mf4_t fixed_vint32mf4_t __attribute__((riscv_rvv_vector_bits(256)));
+typedef vint32mf2_t fixed_vint32mf2_t __attribute__((riscv_rvv_vector_bits(512)));
+typedef vint32m1_t fixed_vint32m1_t __attribute__((riscv_rvv_vector_bits(1024)));
 
-typedef vuint16m1_t fixed_vuint16m1_t
-    __attribute__((riscv_rvv_vector_bits(128)));
-typedef vuint16m2_t fixed_vuint16m2_t
-    __attribute__((riscv_rvv_vector_bits(256)));
-typedef vuint16m4_t fixed_vuint16m4_t
-    __attribute__((riscv_rvv_vector_bits(512)));
+// typedef vuint16m1_t fixed_vuint16m1_t
+//     __attribute__((riscv_rvv_vector_bits(128)));
+// typedef vuint16m2_t fixed_vuint16m2_t
+//     __attribute__((riscv_rvv_vector_bits(256)));
+// typedef vuint16m4_t fixed_vuint16m4_t
+//     __attribute__((riscv_rvv_vector_bits(512)));
 
 #ifdef RISCV_BF16_SUPPORT
 typedef vbfloat16m1_t fixed_vbfloat16m1_t
